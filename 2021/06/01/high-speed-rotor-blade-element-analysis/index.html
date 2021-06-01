@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="高前进比旋翼的桨叶气动问题复杂程度远超常规旋翼">
+<meta property="og:type" content="article">
+<meta property="og:title" content="high_speed_rotor_blade_element_analysis">
+<meta property="og:url" content="http://example.com/2021/06/01/high-speed-rotor-blade-element-analysis/index.html">
+<meta property="og:site_name" content="我是丁尹">
+<meta property="og:description" content="高前进比旋翼的桨叶气动问题复杂程度远超常规旋翼">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-06-01T00:55:56.000Z">
+<meta property="article:modified_time" content="2021-06-01T01:20:51.150Z">
+<meta property="article:author" content="丁尹&#x2F;Chever Ding">
+<meta property="article:tag" content="旋翼飞行器，总体设计，气动建模，飞行仿真">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/06/01/high-speed-rotor-blade-element-analysis/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>high_speed_rotor_blade_element_analysis | 我是丁尹</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">我是丁尹</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">我唱的歌，我自己来和</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/06/01/high-speed-rotor-blade-element-analysis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="丁尹/Chever Ding">
+      <meta itemprop="description" content="旋翼飞行器总体设计与建模仿真">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="我是丁尹">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          high_speed_rotor_blade_element_analysis
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-06-01 08:55:56 / 修改时间：09:20:51" itemprop="dateCreated datePublished" datetime="2021-06-01T08:55:56+08:00">2021-06-01</time>
+            </span>
+
+          
+            <div class="post-description">高前进比旋翼的桨叶气动问题复杂程度远超常规旋翼</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="高前进比旋翼的超常规叶素气动特性分析"><a href="#高前进比旋翼的超常规叶素气动特性分析" class="headerlink" title="高前进比旋翼的超常规叶素气动特性分析"></a>高前进比旋翼的超常规叶素气动特性分析</h1><blockquote>
+<p>作者：丁尹</p>
+</blockquote>
+<p><strong>不负责任的声明</strong>：本文是一篇偏学术派的硬核专业笔记，如因强行阅读本文诱发头晕目眩、昏昏欲睡等症状，丁某概不负责。</p>
+<p>正经来说，本文本来确实是一份笔记稿，不过成稿已经有一些时间了，最近在回顾高前进比旋翼[<u><em>注1</em></u>]相关内容，顺手整理出来与大家交流。主要记录了两个部分的内容，第一个部分阐述了一种关于叶素段如何对应360°翼型气动系数C81表的小技巧，这个小技巧对于刚开始进行旋翼气动分析或者从低阶气动模型逐渐转向高阶气动模型的读者朋友也许有一定的参考价值；第二部分内容对高速直升机旋翼在高前进比状态下桨叶诱导的一些涡运动的特性，其中涉及两篇参考文献，如果没有做过高速直升机旋翼气动方面的研究而想要较好地理解这部分内容的话，建议还是先大致略读以下这两篇参考文献最佳。</p>
+<p>作为一篇笔记稿，本文更多的是一些我自己在进行一些问题的探究过程中的思考，所以其置信度低于通过同行评议的学术论文，大致上与预印本相当，望有深度阅读需求的读者朋友知悉。</p>
+<p>[<u><em>注1</em></u>] 所谓前进比即是$$\mu = Vf/Vtip$$，其中$$\mu$$就是前进比，$$Vf$$是指飞行器的飞行速度，而$$Vtip$$是指旋翼的桨尖线速度，对于常规直升机来说，其前进比的极限值一般决不可能超过0.4。高前进比就是指的$$\mu$$值比较高的情况，对于到底多高能被称为高前进比状态，不同的研究人员有不同的说法，不过$$\mu = 0.6$$（Graham Bowen-Davies；2018）是一个认可度比较高的前进比边界，本文同样认为0.6以下为低前进比，以上则为高前进比状态。</p>
+<h1 id="1-叶素升阻力系数与风洞试验数据的对应关系策略"><a href="#1-叶素升阻力系数与风洞试验数据的对应关系策略" class="headerlink" title="1 叶素升阻力系数与风洞试验数据的对应关系策略"></a>1 叶素升阻力系数与风洞试验数据的对应关系策略</h1><h2 id="1-1-叶素升阻力求解中的疑难点概述"><a href="#1-1-叶素升阻力求解中的疑难点概述" class="headerlink" title="1.1 叶素升阻力求解中的疑难点概述"></a>1.1 叶素升阻力求解中的疑难点概述</h2><p>在旋翼的气动分析中，翼型的升阻力特性获取可谓是相当重要的一环，准确的翼型升阻力特性可以提高计算结果的置信度和精度，而不准确的翼型升阻力特性则可能导致配平发散甚至得到错误的结果，在高速高前进比的状态下，气流的强不对称性愈发明显，旋翼气动环境更为复杂，要对旋翼气动特性进行准确计算，首当其冲的就是获取准确的叶素升阻力系数。<br>为了准确获得叶素升阻力系数，最常用的方法就是先获取对应翼型的360°吹风数据，然后通过插值的方式来得到所需要的结果。但是在代码编写的过程中，我发现常规的叶素气动力系数插值方法，常常存在针对某种来流状态或某种独特翼型的简化假设，导致这些方法无法用于流动复杂、迎角变化幅度大的高前进比状况，为了解决这一问题，我采取了一种全矢量求解迎角和气动力方向的计算策略。</p>
+<p>1.2 风洞试验中的迎角与升阻力方向</p>
+<p>在风洞实验中，常规的做法是保持来流不变，以翼型前缘正对来流为零度迎角，绕气动中心抬头旋转，将翼型从前缘至后缘连成一条矢量线，该矢量与来流方向的夹角就是翼型与来流的迎角 α ，每隔一个给定的角度变化小量，记录一次稳态的升阻力系数，最后统计成表就是常见的翼型升阻力系数C81表。</p>
+<p>在这种试验方式下，阻力的正方向很容易确定，因为阻力矢量与来流矢量始终保持一致，这是毋庸置疑的，而升力的正方向则由以下公式 </p>
+<p>$$\vec{V}_a \times \vec\alpha$$</p>
+<p>来决定，其中 va 表示来流速度矢量，α 表示迎角方向矢量（由零升迎角和右手法则确定），其物理意义实则可以是从茹科夫斯基升力定律中来的：</p>
+<p>$$T = \rho_a \vec{v}_a \times \Gamma$$<br>$$\Gamma = \oint \vec{v} ds$$</p>
+<p>上式中，Γ为绕翼型环量，通过它的计算公式可以看出，环量方向实则与翼型表面速度流动方向一致，由伯努利定律，风洞中产生正升力的翼型上表面流动要大于下表面，因而Γ的方向实则与迎角转动的方向一致，由此便可以得到升力的正方向，而在风洞实验中，这个方向一般取为竖直向上。</p>
+<p>1.3 理论计算中的气动迎角与升阻力方向</p>
+<p>在实际的旋翼叶素气动力计算中，来流的方向不像风洞那样是保持不变的，旋翼的角度也不是某一个确定的静态值。处于飞行来流、旋转来流、诱导来流等多重流动作用中的叶素，其气动迎角和升阻力方向的确定远比风洞要复杂。但是，为了计算方便，在常规直升机的叶素气动力计算中，迎角（如下图所示）一般由安装角 θ 与来流角φ 之差给出，式中uT , uP 分别为切向（周向）来流和轴向来流。</p>
+<p>$$ \alpha = \theta - \phi $$<br>$$\phi = tan^{-1} \frac{u_p}{u_T}$$</p>
+<p>▲叶素来流迎角和升阻力方向示意图</p>
+<p>对于常规直升机而言，除靠近桨根的少部分桨叶段之外（这部分叶素气动力在常规旋翼计算中往往会进行简化处理），绝大部分叶素周向来流都远大于诱导速度，总体而言气动迎角都会落在-15~20°区间，也就是说在大部分状况下，升力系数与迎角是线性关系，升力的方向也比较容易确定，因而这样的简化求解方式是合理的；但是对于高前进比旋翼而言，反流区较大，后行侧大部分桨叶都将进入反流区，周向来流都是从后缘吹向前缘，而反流区内，靠近桨尖的大部分区域，轴向诱导速度相比周向来流，其量级不再有显著差异，因而在旋翼周期运动中，其叶素来流迎角变化幅度将会较为巨大，这种情况下，常规的迎角计算方法将不再适用，比如下图所示的状况。</p>
+<p>▲翼型后缘来流示意图</p>
+<p>观察上图，从直观可以判断出其气动迎角应当是落在180°附近的区域，但是直接用安装角与来流角之差难以计算准确迎角，而且其升力方向与风洞升力系数之间的关系也并不明显，无法用常规方法中的某一解析公式来进行计算。</p>
+<p>1.4 理论计算与风洞数据一一对应的策略</p>
+<p>针对上述问题，一种解决方案是采用分段迎角求解方法，考虑来流的不同方向，将迎角计算域分为多个区域（如分为四个——前缘上方、前缘下方、后缘上方、后缘下方），以此来计算正确的迎角和升阻力系数。这种方法针对特定的翼型能取得较好的效果，实则上却存在通用性的问题，不同的翼型将要选择不同的分段方式，比如说，对于存在零升迎角的非对称翼型，其分段区域的划分显然与对称翼型不同，而在高前进比旋翼的外形优化设计中，将应用多种翼型分段布置，如果用这种分段方式，其通用性和效率都不佳，也不利于研究工作的进一步展开。</p>
+<p>为解决上述问题，采用了一种全矢量求解的策略来处理迎角求解和升阻力方向计算的问题，经验证，该方法能做到将实际情况与风洞数据一一对应起来，通用性较好。</p>
+<p>▲惯性坐标系组示意图</p>
+<p>该方法的基本思路是，首先建立一整套惯性坐标系组（如上图所示），包括桨毂坐标系（下标hub），桨叶旋转坐标系（下标ro），桨叶挥舞坐标系（下标β），叶素当地坐标系（下标be，翼型气动中心为原点，前缘指向后缘为正方向），并计算各坐标系之间的转换矩阵，将速度、控制点等量都作为矢量的形式表示在各个坐标系中，而最后在求解旋翼迎角的时候，将叶素来流从其他坐标系中转换到叶素当地坐标系中，并且表示为矢量的形式，通过计算其与叶素翼型前缘到后缘连线这一矢量之间的夹角来确定准确的来流迎角（为服务于矢量计算，保证角度变化的连续性，本方法中迎角取0°到360°，而非传统的-180°到180°[注2]），在这种坐标系下，升力的矢量方向将由下述方式确定</p>
+<h1 id="迎角的确定"><a href="#迎角的确定" class="headerlink" title="迎角的确定"></a>迎角的确定</h1><p>v_be = rotobe(v_air, β, θ) # 将来流速度矢量转化到叶素坐标系下<br>v_be_2d = [v_be[2],v_be[3]] # 在叶素坐标系下，得出速度在叶素剖面二维矢量<br>α = aoaget(v_be_2d) # 来流矢量与翼型前后缘连线矢量夹角即为实际气动迎角（0-360°）<br>cl,cd = clcdget(α)</p>
+<h1 id="升力方向的确定"><a href="#升力方向的确定" class="headerlink" title="升力方向的确定"></a>升力方向的确定</h1><p>if fcl(α) &gt;= 0.0# 判断升力系数方向<br>    lbe = [0, cos(α+π/2), sin(α+π/2)] # 若为正，则升力方向为迎角正转90°方向<br>else<br>    lbe = [0, cos(α-π/2), sin(α-π/2)] # 若为负，则升力方向为迎角逆转90°方向<br>end</p>
+<p>上述代码中，fcl 为升力系数插值函数，fcl(α) 得到的就是对应迎角的升力系数值，lbe 表示升力正方向的矢量，通过该方式，实际升力的方向能自动与风洞数据匹配，因而可采用下述计算公式计算叶素微段单位升力矢量<br>$$L_e = \vec{lbe} \times |0.5 \rho v^2_r c \times fcl(\alpha)|$$<br>式中，Le 为叶素微段单位升力，vr 为叶素微段总的来流速度，c为弦长。<br>采用上述策略，不仅保证了迎角计算的准确性，同时保证了叶素升阻力系数的插值与风洞数据一一对应起来，且具有良好的通用性，能应用到任意翼型的数据插值中。<br>[注2] 在我以前的代码中（Fortran），0<del>360°方位角变化对于矢量求解代码编写比较友好，在我现在的代码（Julia）中，不管是按照0</del>360°还是-180~180°来求解，代码编写都一样简单，哈哈，推荐一波Julia语言（虽然这本质上其实不是代码语法的作用，主要是对问题的理解更深入了）</p>
+<p>2 叶素的超常规气动问题研究<br>2.1 高前进比流场的物理特性概述<br>在常规直升机旋翼计算中，由于旋翼反流区较小，在工程计算中往往直接被忽略，而在高前进比计算中（如下图所示），反流区扩散到整个后行侧，旋翼有一半的时间在其中转动，处于其中的旋翼将不产生升力或者产生负升力，这种超常规的流动特性对旋翼的气动载荷和旋翼配平都产生了直接的影响，须谨慎考虑和处理。</p>
+<p>▲旋翼前进比增大，反流区逐渐扩大示意图<br>在高前进比旋翼流场复杂物理现象中，其中最具有代表性的就是反流区中来流自尖锐后缘吹向前缘时，在后缘背风处形成的强涡结构以及由于前飞高速来流导致的桨叶径向强偏流效应（Yawed Flow)。强后缘分离涡生成之后，受到高速来流以及径向偏流的影响，与桨叶一起快速移动，导致大部分后行侧桨叶段都受到其影响，而受其影响的叶素微段气动力特性与常规状态下显然存在种种差异。就目前而言，这方面的相关研究尚且较少，方法体系尚不完善。基于从物理现象本身出发进行探索的考虑，本文采用了基于格子-玻尔兹曼（Lattice Boltzmann Method, LBM）的CFD方法进行流场可视化，以此对高前进比旋翼叶素的超常规物理特性进行了一些研究。<br>2.2 反流区后缘涡的物理特征<br>观察旋翼高速高前进比三维流场，可以看到大约在220°方位角的时刻，受高前进比来流的影响，后行侧桨叶的尾随涡无法再卷起为集中的桨尖涡，而靠近桨根的叶素微段处，来流从后缘吹向前缘，生成尖锐后缘涡（Sharp Edge Vortex, SEV），此时受到较强的朝向桨根的径向偏流影响，但是前期后缘涡黏着在后缘表面，拉伸效应不显著；而随着桨叶装过270°，后缘涡又受到较强的朝向桨尖的径向偏流影响，此时后缘涡已经不再是黏附状态，所以拉伸效应显著，加速了后缘涡的扩散。</p>
+<p>▲涡量云图（观察点为桨盘下方）</p>
+<p>▲桨盘下方平面内涡量演化图<br>从涡量演化图中还可以发现，高速来流中桨叶柄的后缘拖出了较强的集中涡，这也从一个方面解释了高前进比旋翼气动性能理论计算中桨盘后向力（阻力）比试验数据要小的现象，高速来流中的桨叶柄显然产生了较强的后向阻力，因而在高前进比气动分析中计入这个现象将提升计算的置信度，此外，该现象的出现也要求我们在进行高前进比旋翼优化设计的过程中，桨叶柄的优化设计也要纳入考量。</p>
+<p>▲后缘二维流场<br>结合三维涡量云图和二维流场图来观察可以发现，尖锐后缘涡自桨叶后缘生成后首先会紧密附着在后缘表面。此后随着桨叶沿方位角转动，后缘涡逐渐变强，涡核逐渐变大，随后与桨叶表面轻微分离，但仍然随着桨叶一起运动，大约300°方位角开始，后缘涡涡核逐渐扩散，汇入自由尾流中。<br>在普遍认可的尖锐后缘涡流动现象中，后缘涡生成后会从后缘尖角脱离，但就上述流场图所展示的内容来说，后缘涡会吸附在桨叶表面并跟随其移动一段时间之后才开始脱落，该现象直接关系到了后缘动态失速是否存在这一问题。<br>是否存在后缘失速问题说明</p>
+<p>a. NACA 0012 翼型升力系数图</p>
+<p>b. OA212翼型升力系数图<br>▲翼型升力系数图<br>上图分别为NACA 0012 和OA212翼型360°吹风数据图，从图中我们明显可以看到，静态吹风数据中，来流从后缘吹向前缘时，大约在170°迎角左右，存在由后缘分离导致的失速现象，从曲线中同样可以看出，翼型前缘流动分离也会导致失速，而在旋翼周期变距运动中，这一现象表现为动态失速（Dynamic Stall），对于前缘分离导致的动态失速，Leishman-Beddoes 的旋翼翼型动态失速模型计算简单、效率高、精度好因而应用广泛，取得了普遍的认可。<br>那么，后缘分离导致的失速现象会不会在高前进比旋翼后行侧桨叶的变距运动中演化为动态失速呢？Potsdam 等人[1]在2016年应用RCAS对UH-60A的旋翼分析中，认为，后缘动态失速是存在的，并且产生了后缘动态失速涡（如下图a所示，动态失速涡受偏流影响从后缘移向前缘，导致了图中出现的吸力峰），但是对其物理特性却无法进行准确分析，而在本文的CFD模拟中发现，从大约220°方位角产生尖锐后缘涡开始，由于旋翼的转动和径向流动的影响，后缘涡经历了从黏附后缘表面到分离的过程，但其始终在桨叶后缘表面附近，在前飞来流的偏流影响下，随桨叶一起运动到约300°扩散为止，也就是没有出现动态失速这一过程，Potsdam 等人观察到的“动态失速涡”很有可能就是径向运动的尖锐后缘涡，Hiremath 等人[2]本年度于乔治亚理工学院低速风洞中做的高前进比试验也佐证了这一观点。</p>
+<p>a. Potsdam 观察到的“动态失速涡”在桨叶下表面导致的压力变化</p>
+<p>b. Hiremath 的实验结果<br>▲理论计算和试验结果的对比<br>综上所述，在后续对后行侧的叶素升阻力系数计算中，必须谨慎对待该现象，可通过计入尖锐后缘涡的影响来对升阻力插值表进行修正，拟采用的做法是对静态数据中后缘分离失速段做平滑处理，延缓后缘失速迎角的插值区间。<br>2.3 强偏流效应的修正</p>
+<p>▲偏流示意图<br>上图中Λ为偏流角，ut 为周向分量，V∞ 为前飞来流，则偏流角计算公式如下，其中ψ为方位角。<br>$$\Lambda = cos^{-1} (u_t/V_\infty)$$<br>$$u_t = V_\infty sin(\psi) $$<br>在高速飞行的时候，来流速度V∞ 径向分量和周向分量随方位角变化曲线如下图所示，其中径向分量指向桨尖为正，周向分量从前缘吹向后缘为正。</p>
+<p>▲前飞来流桨叶周向和径向分量随方位角变化示意图<br>由此可见，径向分量Ur 在高速高前进比飞行过程中，相比于旋翼转速而言已经不可忽略，因此在高速高前进比旋翼的叶素气动参数计算过程中不计入偏流效应，很可能得到错误的结果，影响配平和性能计算的准确性。前行侧旋翼的偏流效应下叶素的气动力系数的求解中可以通过由Smith等人[3]提出的偏流效应修正公式来计入片偏流效应的影响：<br>$$c_l(\alpha) = c_{l_2d}(\alpha cos^2\Lambda)/cos^2\Lambda$$<br>$$c_d(\alpha) = c_{d_2d} ( \alpha cos\Lambda)/cos\Lambda$$<br>$$c_m(\alpha) = c_{m_2d}(\alpha cos^2\Lambda)/cos^2 \Lambda$$<br>式中下标2d表示未考虑偏流效应状态下的升阻力系数值。<br>而本文中为了计入高速状态下后行侧反流区中偏流效应带来的影响，主要针对典型翼型在后行侧反流区中存在不同偏流速度时的升阻力系数进行了计算，而后通过数据拟合，形成偏流效应修正的半经验修正策略，其基本思想就是通过拟合受偏流影响下的升阻力系数随方位角变化函数以及偏流角随方位角变化函数（下图所示就是一种拟合方式），最后通过函数间的对应关系，计算出修正的升力系数值。</p>
+<p>▲升力系数随方位角变化示意图（反流区）</p>
+<p>▲偏流角随方位角变化示意图<br>2.4 小结<br>基于格子-波尔兹曼的CFD方法对流体介质的运动模拟和计算效率都要优于传统基于N-S方程的CFD方法，但是在物面网格划分的细致程度和求解精度方面略逊一筹。<br>无论哪种CFD方法，从目前来看，受限于湍流模型和数值耗散，还是只能对高速高前进比旋翼的强不对称性周期流动进行定性分析或者精度要求较低的定量分析，尚且还无法达到常规旋翼分析那样的精度。<br>尽管如此，CFD的流场可视化结果仍然有助于我们对高前进比旋翼叶素的超常规物理特性进行更为深入的了解，而由此得到的结论足以为叶素的气动参数的求解和修正提供有益的方向，从而进一步推进高前进比旋翼的性能分析和优化设计。</p>
+<p>参考文献</p>
+<ol>
+<li>Potsdam M, Datta A, Jayaraman B. Computational investigation and fundamental understanding of a slowed uh-60a rotor at high advance ratios[J]. Journal of the American Helicopter Society, 2016, 61(2): 1-17. </li>
+<li>Hiremath N, Shukla D, Komerath N. Physics of Reverse Flow on Rotors at High Advance Ratios[J]. arXiv preprint arXiv:1805.00136, 2018. </li>
+<li>Smith M J, Koukol B C G, Quackenbush T, et al. Reverse-and cross-flow aerodynamics for high-advance-ratio flight[C]. 2009. </li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/31/hello-world/" rel="prev" title="你好，认识一下">
+      <i class="fa fa-chevron-left"></i> 你好，认识一下
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%AB%98%E5%89%8D%E8%BF%9B%E6%AF%94%E6%97%8B%E7%BF%BC%E7%9A%84%E8%B6%85%E5%B8%B8%E8%A7%84%E5%8F%B6%E7%B4%A0%E6%B0%94%E5%8A%A8%E7%89%B9%E6%80%A7%E5%88%86%E6%9E%90"><span class="nav-number">1.</span> <span class="nav-text">高前进比旋翼的超常规叶素气动特性分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%8F%B6%E7%B4%A0%E5%8D%87%E9%98%BB%E5%8A%9B%E7%B3%BB%E6%95%B0%E4%B8%8E%E9%A3%8E%E6%B4%9E%E8%AF%95%E9%AA%8C%E6%95%B0%E6%8D%AE%E7%9A%84%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB%E7%AD%96%E7%95%A5"><span class="nav-number">2.</span> <span class="nav-text">1 叶素升阻力系数与风洞试验数据的对应关系策略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E5%8F%B6%E7%B4%A0%E5%8D%87%E9%98%BB%E5%8A%9B%E6%B1%82%E8%A7%A3%E4%B8%AD%E7%9A%84%E7%96%91%E9%9A%BE%E7%82%B9%E6%A6%82%E8%BF%B0"><span class="nav-number">2.1.</span> <span class="nav-text">1.1 叶素升阻力求解中的疑难点概述</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%8E%E8%A7%92%E7%9A%84%E7%A1%AE%E5%AE%9A"><span class="nav-number">3.</span> <span class="nav-text">迎角的确定</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%87%E5%8A%9B%E6%96%B9%E5%90%91%E7%9A%84%E7%A1%AE%E5%AE%9A"><span class="nav-number">4.</span> <span class="nav-text">升力方向的确定</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">丁尹/Chever Ding</p>
+  <div class="site-description" itemprop="description">旋翼飞行器总体设计与建模仿真</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">丁尹/Chever Ding</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

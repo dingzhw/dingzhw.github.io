@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"dingzhw.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="简悦::一个有着无限可能的chrome辅助阅读插件，然而它的功能早就远远超出了传统意义上的阅读模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于简悦&#x2F;Obsidian&#x2F;Syncthing的信息收集与多端处理工作流">
+<meta property="og:url" content="https://dingzhw.github.io/2022/01/04/%E5%9F%BA%E4%BA%8E%E7%AE%80%E6%82%A6-obsidian-syncthing%E7%9A%84%E5%85%A8%E5%B9%B3%E5%8F%B0%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86%E4%B8%8E%E5%A4%84%E7%90%86%E5%B7%A5%E4%BD%9C%E6%B5%81/index.html">
+<meta property="og:site_name" content="丁志伟(丁乙)">
+<meta property="og:description" content="简悦::一个有着无限可能的chrome辅助阅读插件，然而它的功能早就远远超出了传统意义上的阅读模式">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/chever/figsbed/raw/master/figs/%E6%88%AA%E5%9B%BE_20222805112838-2022-1-523:28:40.png">
+<meta property="og:image" content="https://gitee.com/chever/figsbed/raw/master/figs/%E6%88%AA%E5%9B%BE_20224805094817-2022-1-521:48:29.png">
+<meta property="og:image" content="https://gitee.com/chever/figsbed/raw/master/figs/%E6%88%AA%E5%9B%BE_20221205101218-2022-1-522:12:20.png">
+<meta property="og:image" content="https://gitee.com/chever/figsbed/raw/master/figs/%E6%88%AA%E5%9B%BE_20222105102100-2022-1-522:21:04.png">
+<meta property="og:image" content="https://gitee.com/chever/figsbed/raw/master/figs/%E6%88%AA%E5%9B%BE_20223305103301-2022-1-522:33:21.png">
+<meta property="og:image" content="https://gitee.com/chever/figsbed/raw/master/figs/simreader-1-2022-1-523:26:56.png">
+<meta property="og:image" content="https://gitee.com/chever/figsbed/raw/master/figs/simreader-2-2022-1-523:26:44.png">
+<meta property="og:image" content="https://gitee.com/chever/figsbed/raw/master/figs/simreader-3-2022-1-523:26:28.png">
+<meta property="og:image" content="https://gitee.com/chever/figsbed/raw/master/figs/%E7%AE%80%E6%82%A6obsidian%E5%AF%BC%E5%87%BApdf-2022-1-523:25:59.png">
+<meta property="article:published_time" content="2022-01-04T06:28:15.973Z">
+<meta property="article:modified_time" content="2022-01-06T02:47:41.344Z">
+<meta property="article:author" content="丁乙&#x2F;Chever Ding">
+<meta property="article:tag" content="效率工具">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/chever/figsbed/raw/master/figs/%E6%88%AA%E5%9B%BE_20222805112838-2022-1-523:28:40.png">
+
+<link rel="canonical" href="https://dingzhw.github.io/2022/01/04/%E5%9F%BA%E4%BA%8E%E7%AE%80%E6%82%A6-obsidian-syncthing%E7%9A%84%E5%85%A8%E5%B9%B3%E5%8F%B0%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86%E4%B8%8E%E5%A4%84%E7%90%86%E5%B7%A5%E4%BD%9C%E6%B5%81/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>基于简悦/Obsidian/Syncthing的信息收集与多端处理工作流 | 丁志伟(丁乙)</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">丁志伟(丁乙)</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">江南游子/旋翼热爱者</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://dingzhw.github.io/2022/01/04/%E5%9F%BA%E4%BA%8E%E7%AE%80%E6%82%A6-obsidian-syncthing%E7%9A%84%E5%85%A8%E5%B9%B3%E5%8F%B0%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86%E4%B8%8E%E5%A4%84%E7%90%86%E5%B7%A5%E4%BD%9C%E6%B5%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="丁乙/Chever Ding">
+      <meta itemprop="description" content="旋翼飞行器总体/气动设计与建模仿真">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="丁志伟(丁乙)">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          基于简悦/Obsidian/Syncthing的信息收集与多端处理工作流
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-04 14:28:15" itemprop="dateCreated datePublished" datetime="2022-01-04T14:28:15+08:00">2022-01-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-06 10:47:41" itemprop="dateModified" datetime="2022-01-06T10:47:41+08:00">2022-01-06</time>
+              </span>
+
+          
+            <div class="post-description"><center>简悦::一个有着无限可能的chrome辅助阅读插件，然而它的功能早就远远超出了传统意义上的阅读模式</center></div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><img src="https://gitee.com/chever/figsbed/raw/master/figs/%E6%88%AA%E5%9B%BE_20222805112838-2022-1-523:28:40.png"></p>
+<blockquote>
+<p>本文涉及到的应用（<del>无利益相关</del>）</p>
+</blockquote>
+<ol>
+<li><a target="_blank" rel="noopener" href="http://ksria.com/simpread/">简悦</a> :: 一个有着无限可能的chrome辅助阅读插件，然而它的功能早就远远超出了传统意义上的 <em>阅读模式</em></li>
+<li><a target="_blank" rel="noopener" href="https://obsidian.md/">Obsidian</a> :: 最好用的笔记app（<del>我要我觉得</del>），基于本地<code>markdown</code>，治好了我多年的<del>印象笔记还能苟</del>强迫症，我不仅拿它写专栏文章，同时正在用它写大小论文</li>
+<li><a target="_blank" rel="noopener" href="https://syncthing.net/">Syncthing</a> :: 开源多端同步工具，我不仅用它来在PC和移动设备之间同步文章，代码，还用来在不同工作站之间同步计算过程文件，局域网同步性能堪称逆天</li>
+<li><a target="_blank" rel="noopener" href="https://cryptomator.org/">Cryptomator</a> :: 开源加密工具，极速解密&amp;如同windows原生文件操作的丝滑体验</li>
+<li><a target="_blank" rel="noopener" href="https://logseq.com/">Logseq</a> :: 以大纲笔记为特点的笔记app，基于本地<code>markdown</code>功能强大且处于积极开发中，对大纲笔记爱好者来说，简直比Obsidian还出色</li>
+<li><a target="_blank" rel="noopener" href="https://anytxt.net/">AnyTXT</a> :: 可以用来搜索整个硬盘上是所有的包含有文字的文档，偶尔搜一下，可能会发现一些你未曾想到过的文档之间的关联</li>
+</ol>
+<hr>
+<p>众所周知，这是一个信息泛滥以至于过剩的时代。每天在被铺天盖地的信息洪流淹没的时候，相信诸位都会对自己并不那么可靠的大脑感到或多或少有些不满<a href="%5B%E6%88%91%E7%94%A8%E8%BF%87%E5%8D%81%E5%87%A0%E7%A7%8D%E7%AC%94%E8%AE%B0App%EF%BC%8C%E6%9C%80%E5%90%8E%E5%8F%AA%E6%8E%A8%E8%8D%90%E8%BF%99%E4%B8%AA%E6%96%B0%E6%9D%A5%E7%9A%84%EF%BC%9Aflomo/%E6%B5%AE%E5%A2%A8%E7%AC%94%E8%AE%B0%E9%A3%9F%E7%94%A8%E7%82%B9%E8%AF%84%5D(https://zhuanlan.zhihu.com/p/396568078)">^brain</a>。我们需要做的不是锻炼自己的大脑肌肉来使得自己的大脑更强韧，我们更需要的是一套<strong>可靠的外部工作流</strong>，来分担我们大脑的工作，从而使自己的大脑能够聚焦到<del><strong>思考人生</strong>这件重要的事情上来</del>处理那些真正需要发挥创造性思维的事项上去。</p>
+<p>所以，如果你也<strong>对互联网信息资料有收集/加工处理和输出</strong>有需求的话，那么本文所介绍的工作流或许对你会有所帮助。</p>
+<p><img src="https://gitee.com/chever/figsbed/raw/master/figs/%E6%88%AA%E5%9B%BE_20224805094817-2022-1-521:48:29.png"><br>▲ 基于_Logseq_ 的大纲笔记是整理思路的最佳选择</p>
+<h1 id="1st-前处理-gt-gt-简悦"><a href="#1st-前处理-gt-gt-简悦" class="headerlink" title="1st - 前处理 &gt;&gt; 简悦"></a>1st - 前处理 &gt;&gt; 简悦</h1><blockquote>
+<p>我以前一直都在用印象笔记剪藏网页，这也是我一直认为自己无法放弃印象笔记的唯一原因，直到简悦优雅的导出功能出现在我眼前… ….</p>
+</blockquote>
+<p><em>Chrome</em> 浏览器本身无疑是非常出色的一款浏览器, 但是其的阅读体验却一直都很糟糕, 虽然_阅读模式_ 并不能说是浏览器的必备功能, 但是如果你体验过_Safari_ 或者_Firefox_ 的阅读模式之后, 再回头来在_Chrome_ 上阅读信息, 应该会有那么一点<del>糟心的感觉</del>.</p>
+<blockquote>
+<p>当然, 如果你用过基于_Chromium_ 内核的_Edge_ 浏览器的阅读模式的话, 想必你一定会对原生_Chrome_ 的阅读模式感到痛苦的, 毕竟_Edge_ 的阅读模式实在是太出色了(可惜功能完全没法和简悦比)… …</p>
+</blockquote>
+<p>无论如何, 我就这么踏上了<strong>寻找一种好用的阅读模式的插件之旅</strong>, 期间接触过很多阅读模式的方法, 零零散散的插件也用过很多, 抱歉的是对于那些插件我现在几乎都记不得名字了, 也许他们也有其特点, 但是对我而言, <strong>还不够好用</strong>!</p>
+<p>有相当长一段时间, 我甚至与依赖_印象笔记_ 的剪藏插件附带的功能来进行部分网页的阅读, 虽然那个排版的美感让人难以恭维, 但是好歹在页面清爽度和可读性上达到了及格效果, 网站适配度也还可以, 阅读完了, 如果觉得有用(大概就是可以在此基础上进行<strong>信息的萃取和二次创作</strong>这样子), 那么顺手还可以剪藏到印象笔记中, 作为当时的过渡方案, 总的来说, 对于提高我当时的工作效率和生产力还是有所裨益的.</p>
+<p>后来, <em>简悦</em> 悄悄出现了.</p>
+<p>第一次用简悦的时候, 我就被他整洁的排版, 精心打磨的深色模式和绝大部分网站的完美适配所吸引, 所以即便是在它的后台有这一大堆看着就让人<del>胸闷心慌</del>眼花缭乱的设置选项, 我还是毫不犹豫的奔向了这个插件的怀抱, 到后来简约升级2.0 付费版, 我也是毫不犹豫付了钱(<del>当然价格真的是低到我都不敢相信—而且还是满断制, 在各种性价比不符的订阅制应用中真的是一股清流—应该是立刻购买的重要原因吧</del>).</p>
+<p><img src="https://gitee.com/chever/figsbed/raw/master/figs/%E6%88%AA%E5%9B%BE_20221205101218-2022-1-522:12:20.png"><br>▲ 在简悦阅读模式下阅读我的专栏文章</p>
+<p><strong>简悦到底好在哪里</strong>?</p>
+<ul>
+<li>极其全面的网站适配, 可以说, 只要一个网页看起来像是值得阅读的, 那么简悦都是适配的, 退一万步说, 即便网页源真的没有适配, 开发者也给出了手动适配的<strong>保姆级教学</strong></li>
+<li>精心打磨且高度可定制的阅读模式界面, 无论是字距/行距/版面宽度, 还是浅色/深色 都是可以定制的, 如果你懂<code>css</code>, 我觉得可定制度应该可以更大(<del>虽然我不懂</del>), 不过, 在作者提供的详细教学引导下, 我还是通过开放的_google fonts_ 给我的阅读模式设置了专属字体.</li>
+<li>野心勃勃的插件系统给简悦提供了无数可能, 让其完全超越阅读模式而成为了一种真正的知识管理工具, 下面我要讲的<strong>基于简悦的网络信息资料搜集</strong>就有赖于这个插件系统</li>
+</ul>
+<p>网络上有大量的信息资源, 其中不乏学术资料, 我下面的例子就是关于学术资料搜集的.</p>
+<p>首先当然是_泛读_ , 当我对某一个主题感兴趣的时候, 我会到互联网上进行大量的检索, 其结果会包括各种各样的链接: 博客文章/新闻资讯/学术论文(html版)等等, 在泛读这一步, 简悦完美做好了自己的本职工作 -&gt; 清爽的阅读模式给我带来的良好阅读体验, 无论是从心理层面还是实际操作层面, 都提升了我的阅读效率.</p>
+<p><img src="https://gitee.com/chever/figsbed/raw/master/figs/%E6%88%AA%E5%9B%BE_20222105102100-2022-1-522:21:04.png"><br>▲ 原网页(左)/简悦处理之后(右)</p>
+<p>对于基础的网页阅读, 简悦的插件系统提供了_字数统计_ / <em>英文辅助阅读增强</em> / <em>代码段增强</em> / <em>划词翻译</em> 等出色的功能, 一切都与简悦的阅读模式原生结合, 有着丝滑的体验, 对于泛读而言, 这些功能已经足够了.</p>
+<p>到了精读的层次, 简悦的_Live Editor_ 插件就要派上用场了, 顾名思义, 该插件能够在简悦阅读模式下的网页上<strong>直接进行编辑</strong>, 所见即所得. 用_Live Editor_ , 你可以对页面任何的文本内容进行修改, 就好像在<strong>文字处理工具中改文章一样方便</strong></p>
+<p><img src="https://gitee.com/chever/figsbed/raw/master/figs/%E6%88%AA%E5%9B%BE_20223305103301-2022-1-522:33:21.png"><br>▲ 用_Live Editor_ 处理前后对比</p>
+<p>我始终觉得, 对于一篇需要精读的文章, 圈圈改改是很有价值的, 这也就是我推崇_Live Editor_ 的原因—不需要离开浏览器就可以实现直接圈圈改改, 非常适合信息获取的初级阶段. 最重要的是, 所有的圈圈改改, 都可以方便地通过<strong>简悦强大的导出功能, 以丰富的格式导出到本地, 以后进一步的进行信息整理/萃取和再利用</strong>.</p>
+<p>对于我而言, 这一步是导出为_Markdown_ , 在这之后, 重量级笔记应用_Obsidian_ 将闪亮登场.</p>
+<blockquote>
+<p>※ 除了_Live Editor_ 之后, 简悦有着更为强大的标注系统和与之深度集成的_稍后读_ 系统, 该系统配合本地版本的_简悦同步助手_(Win+Mac), 可以实现很多自动化的信息获取和管理功能, 在简悦的GitHub主页上, 开发者提供了相当详细且完善的教学. 不过如果你和我一样主力机器是_Linux_ 那就别折腾这些啦, 老老实实用_Live Editor_ 吧.</p>
+<p>※ 除了导出_Markdown_ 之外, 简悦还能导出各种各样的格式, 除了导出到本地, 还能导出到各种各样的云文档云服务, 具体你可以去选项页瞅瞅, 我用不到就不多说了.</p>
+</blockquote>
+<h1 id="2nd-求解器-gt-gt-Obsidian"><a href="#2nd-求解器-gt-gt-Obsidian" class="headerlink" title="2nd - 求解器 &gt;&gt; Obsidian"></a>2nd - 求解器 &gt;&gt; Obsidian</h1><blockquote>
+<p>如果你品尝过印象笔记编辑的卡顿，Word的臃肿或者$LaTex$代码的繁琐，又不想自己的数据完全被基于云端的Notion、语雀或者飞书文档之类所“挟持”，那么基于本地<code>markdown</code>的Obsidian应该是你的白月光… …</p>
+</blockquote>
+<p>虽然我很想用更大的篇幅来吹一波_Obsidian_ , 但是很抱歉, 这篇文章是<del>吹简悦</del>的, 所以从现在开始我要<strong>长话短说</strong>了!</p>
+<p>虽然通过简悦同步助手和稍后读, 简悦可以和Obsidian有着更为紧密且丝滑的集成(包括自动化的双链等, 具体参见简悦Github主页的教程), 但我目前还不需要那些<del>我用不到</del>的功能, 就不多说了. 我的这套工作流, 逻辑很简单很清晰, 按照以下步骤走:</p>
+<ol>
+<li>建立一个本地的_Inbox_文件夹;</li>
+<li>Chrome设置自动保存文件, 默认保存位置就是_Inbox_;</li>
+<li>认为需要通过简悦精读的文章, 就会用_Live Editor_ 圈圈改改并打上标签, 随后点击简悦的导出 -&gt; Markdown, 于是一篇完整的markdown资料就进入到了我的Inbox库中;</li>
+<li>在完成初步的信息搜集之后(查完了一圈信息, 泛读了不少文章, 精读导出了一些到_Inbox_中), 回到Obsidian, 通过标签查找等手段来查阅那些需要精读的文章, 对其进行进一步加工处理;</li>
+<li>(有必要的话) 通过Obsidian出色的导出功能, 导出为排版精美的PDF文件以便进行分享;</li>
+<li>通过_Syncthing_ 这个开源同步神器, 实现多端之间的高效同步, 而Obsidian在移动端和PC端几乎毫无差别的笔记编辑体验确保了多端同步之后的工作效率;</li>
+<li>(有必要的话) 通过_Cryptomator_ 这个开源文件加密应用, 进一步保护你的笔记安全.</li>
+</ol>
+<p><img src="https://gitee.com/chever/figsbed/raw/master/figs/simreader-1-2022-1-523:26:56.png"><br>▲ 这是通过_Live Editor_ 圈圈改改编辑过的页面<br><img src="https://gitee.com/chever/figsbed/raw/master/figs/simreader-2-2022-1-523:26:44.png"><br><img src="https://gitee.com/chever/figsbed/raw/master/figs/simreader-3-2022-1-523:26:28.png"><br>▲ 简单三步走, 将一篇需要精读的资料导入到了Obsidan的库中</p>
+<p><img src="https://gitee.com/chever/figsbed/raw/master/figs/%E7%AE%80%E6%82%A6obsidian%E5%AF%BC%E5%87%BApdf-2022-1-523:25:59.png"><br>▲通过简悦导出到<code>Obsidian</code>库中的<code>markdown</code>文件，可通过<code>Obsidian</code>内置导出模块生成优雅的pdf文件</p>
+<h1 id="3rd-后处理-gt-gt-AnyTXT"><a href="#3rd-后处理-gt-gt-AnyTXT" class="headerlink" title="3rd - 后处理 &gt;&gt; AnyTXT"></a>3rd - 后处理 &gt;&gt; AnyTXT</h1><p><del>好吧，我承认这个所谓的后处理这一章节是我硬凑出来的，毕竟前处理和求解器都有了</del>，虽然大部分后处理工作实际上仍然应该是Obsidian的活儿，但是AnyTXT仍然有其妙处… …</p>
+<p>AnyTXT 几乎能够所检索你硬盘内存储的所有文本类内容, 使用的学习成本为0, 所以操作方面就不多说了. 值得一提的是, 当你的本地笔记积累到一定数量的时候, 你用AnyTXT进行本地关键词检索之时, 时不时还会发现知识点之间的奇妙联系, 比如说对于我来说, 我在检索<code>vortex methods</code>的时候, 就发现了一段以前为飞机涡格法编写的代码(早已被大脑遗忘), 尽管此次我搜索涡方法目的是为了编写直升机涡尾迹流场计算代码, 但是那一段飞机涡格代码却给我带来了不少的参考和灵感, 这大概也算是某种小惊喜了吧.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%88%E7%8E%87%E5%B7%A5%E5%85%B7/" rel="tag"># 效率工具</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/28/hello-world/" rel="prev" title="😀嗨">
+      <i class="fa fa-chevron-left"></i> 😀嗨
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1st-%E5%89%8D%E5%A4%84%E7%90%86-gt-gt-%E7%AE%80%E6%82%A6"><span class="nav-number">1.</span> <span class="nav-text">1st - 前处理 &gt;&gt; 简悦</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2nd-%E6%B1%82%E8%A7%A3%E5%99%A8-gt-gt-Obsidian"><span class="nav-number">2.</span> <span class="nav-text">2nd - 求解器 &gt;&gt; Obsidian</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3rd-%E5%90%8E%E5%A4%84%E7%90%86-gt-gt-AnyTXT"><span class="nav-number">3.</span> <span class="nav-text">3rd - 后处理 &gt;&gt; AnyTXT</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">丁乙/Chever Ding</p>
+  <div class="site-description" itemprop="description">旋翼飞行器总体/气动设计与建模仿真</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">丁乙/Chever Ding</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
